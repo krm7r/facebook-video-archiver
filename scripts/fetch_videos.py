@@ -115,9 +115,18 @@ def save_mp4(session: requests.Session, direct_url: str, destination: Path) -> i
         raise
 
 
+def parse_input_urls(raw: str) -> list[str]:
+    """Accept links separated by newlines, spaces, commas, or semicolons."""
+    return [
+        item.strip()
+        for item in re.split(r"[\s,;]+", raw)
+        if item.strip() and not item.lstrip().startswith("#")
+    ]
+
+
 def main() -> int:
     raw = os.environ.get("VIDEO_URLS", "")
-    urls = [line.strip() for line in raw.splitlines() if line.strip() and not line.lstrip().startswith("#")]
+    urls = parse_input_urls(raw)
     if not urls:
         print("No Facebook URLs supplied; nothing to do.")
         return 0

@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       urls:
-        description: "Facebook video URLs, one per line"
+        description: "Facebook video URLs, separated by commas"
         required: true
         type: string
 
