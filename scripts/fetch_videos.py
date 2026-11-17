@@ -147,22 +147,34 @@ def main() -> int:
     )
     session.mount("https://", HTTPAdapter(max_retries=retry))
     failures: list[str] = []
+    successes = 0
     for index, url in enumerate(urls, start=1):
         if not valid_facebook_url(url):
-            failures.append(f"line {index}: only HTTPS Facebook or fb.watch URLs are accepted")
+            message = f"line {index}: unsupported URL (only HTTPS Facebook or fb.watch links are accepted): {url}"
+            failures.append(message)
+            print(f"Skipped: {message}", file=sys.stderr)
             continue
         destination = VIDEO_DIR / f"{video_id(url, index)}.mp4"
         try:
             direct = get_hd_link(session, url)
             size = save_mp4(session, direct, destination)
+            successes += 1
             print(f"Saved {destination} ({size:,} bytes)")
         except Exception as exc:
             failures.append(f"line {index} ({url}): {exc}")
-            print(f"Failed: {url}: {exc}", file=sys.stderr)
+            print(
+                f"Failed: {url}: {exc}. The post may be unavailable/private, may not have an HD rendition, or Floader may be temporarily unable to parse it.",
+                file=sys.stderr,
+            )
 
     if failures:
-        print("Some downloads failed; no commit will be made by the workflow.", file=sys.stderr)
+        print(f"Finished with {successes} successful download(s) and {len(failures)} skipped/failed link(s).", file=sys.stderr)
+        if successes:
+            print("Successful MP4 files will still be committed by the workflow.")
+            return 0
+        print("No files were downloaded; failing this run.", file=sys.stderr)
         return 1
+    print(f"Finished successfully: {successes} video(s) downloaded.")
     return 0
 
 
