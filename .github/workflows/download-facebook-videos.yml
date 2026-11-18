@@ -18,7 +18,7 @@ concurrency:
 jobs:
   download-and-commit:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 100
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
