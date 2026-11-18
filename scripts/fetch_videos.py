@@ -17,7 +17,7 @@ from urllib3.util.retry import Retry
 API = "https://floader.net/php/api/api.php"
 VIDEO_DIR = Path("videos")
 MAX_FILE_BYTES = 95 * 1024 * 1024  # Stay below GitHub's 100 MiB individual-file limit.
-MAX_URLS = 30
+MAX_URLS = 100
 
 
 class DownloadLinks(HTMLParser):
